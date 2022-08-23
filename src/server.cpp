@@ -30,7 +30,7 @@ tl::expected<i32, str> Server::dispatch_clients() noexcept
             usize n_bytes_received = 0;
             new_connection->receive(buffer.data(), buffer.size(), n_bytes_received);
             auto as_string = std::string(buffer.data());
-            auto cmd = command::parse_command(std::move(as_string));
+            auto cmd = command::try_from_json(std::move(as_string));
             // FIXME: client should receive an error message!
             if (!cmd) {
                 std::cerr << "Couldn't accept connection: invalid command!\n";
