@@ -15,11 +15,6 @@ struct SerializedCommand
     std::vector<std::string> command_arguments;
 };
 
-void from_json(const nlohmann::json& j, SerializedCommand& sc) {
-    j.at("cmd").get_to(sc.command);
-    j.at("args").get_to(sc.command_arguments);
-}
-
 enum class CommandType
 {
     JOIN,

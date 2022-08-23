@@ -1,7 +1,16 @@
 #include "../inc/command_parser.hpp"
 #include "../inc/json.hpp"
 
-using namespace command;
+
+namespace command 
+{
+
+void from_json(const nlohmann::json& j, command::SerializedCommand& sc) {
+    j.at("cmd").get_to(sc.command);
+    j.at("args").get_to(sc.command_arguments);
+}
+
+
 
 tl::expected<Command, str> try_from_json(const std::string& raw) noexcept
 {
@@ -19,10 +28,11 @@ tl::expected<Command, str> try_from_json(const std::string& raw) noexcept
     }
 }
 
-
 Command::Command(SerializedCommand&& sc)
     : arguments(std::move(sc.command_arguments))
 {
     // no checking necessary -- that has been done in `try_from_json`
     this->type = known_commands[sc.command];
 }
+
+} // command
