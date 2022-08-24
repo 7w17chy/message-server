@@ -54,11 +54,12 @@ private:
     std::pair<Mutex, RoomMap> active_rooms;
     std::pair<Mutex, Corridor> corridor;
 public:
-    void create_room(const std::string& name);
-    void destroy_room(const std::string& name);
-    void add_client(std::shared_ptr<client::Client> client);
-    void remove_client(const client::Client& client);
-    std::optional<std::shared_ptr<room::Room>> search_room(const std::string& name);
+    void create_room(const std::string&);
+    void add_room(std::shared_ptr<room::Room>, const std::string&);
+    void destroy_room(const std::string&);
+    void add_client(std::shared_ptr<client::Client>);
+    void remove_client(const client::Client&);
+    std::optional<std::shared_ptr<room::Room>> search_room(const std::string&);
 };
 
 } // state

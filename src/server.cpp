@@ -34,7 +34,11 @@ tl::expected<i32, str> Server::dispatch_clients() noexcept
                     .connection = std::move(new_connection), 
                 });
                 this->server_state.add_client(client);
-                // TODO: send client to welcome room
+
+                // send to welcome room
+                std::shared_ptr<room::Room> welcome_room = 
+                    *this->server_state.search_room("welcome");
+                welcome_room->on_client_join(client);
             } else {
                 std::cerr << "Couldn't accept connection: authentication required!\n";
                 continue;

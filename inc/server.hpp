@@ -21,11 +21,9 @@ class Server
 {
 private:
     state::GlobalServerState& server_state;
-    std::shared_ptr<room::Room> welcome_room;
 public:
-    explicit Server(std::shared_ptr<room::Room> r, state::GlobalServerState& gs)
+    explicit Server(state::GlobalServerState& gs)
         : server_state(gs)
-        , welcome_room(r)
     {}
 
     tl::expected<i32, str> dispatch_clients() noexcept;

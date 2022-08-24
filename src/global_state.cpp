@@ -11,7 +11,18 @@ void GlobalServerState::create_room(const std::string& name)
     auto room = std::make_shared<room::Room>();
     rooms[name] = room;
 
-    // get a hold onto the channels room
+    // get a hold onto the rooms channel
+    auto [lock2, corridor] =
+        GlobalServerState::MutexLock<Corridor>::lock_blocking(this->corridor);
+    corridor[name] = rooms[name]->get_channel();
+}
+
+void GlobalServerState::add_room(std::shared_ptr<room::Room> new_room, const std::string& name)
+{
+    auto [lock, rooms] = GlobalServerState::MutexLock<RoomMap>::lock_blocking(this->active_rooms);
+    rooms[name] = new_room;
+
+    // get a hold onto the rooms channel
     auto [lock2, corridor] =
         GlobalServerState::MutexLock<Corridor>::lock_blocking(this->corridor);
     corridor[name] = rooms[name]->get_channel();

@@ -14,6 +14,8 @@ static state::GlobalServerState server_state;
 tl::expected<i32, str> entry(util::Arguments)
 {
     auto welcome_room = std::make_shared<room::Room>();
-    server::Server server(welcome_room, server_state);
+    server_state.add_room(welcome_room, "welcome");
+
+    server::Server server(server_state);
     return server.dispatch_clients();
 }

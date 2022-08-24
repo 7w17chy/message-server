@@ -21,7 +21,6 @@ private:
     sf::SocketSelector client_connections;
     // users who want to join the channel
     std::shared_ptr<msd::channel<std::shared_ptr<client::Client>>> new_users;
-private:
 public:
     Room()
         : participating_clients()
