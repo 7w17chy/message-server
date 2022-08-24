@@ -1,22 +1,21 @@
 #include "../inc/command_parser.hpp"
 #include "../inc/json.hpp"
+#include <iostream>
 
 
 namespace command 
 {
 
-void from_json(const nlohmann::json& j, command::SerializedCommand& sc) {
-    j.at("cmd").get_to(sc.command);
-    j.at("args").get_to(sc.command_arguments);
-}
-
-
-
 tl::expected<Command, str> try_from_json(const std::string& raw) noexcept
 {
     try {
-        nlohmann::json jparse(raw);
-        auto parsed = jparse.get<SerializedCommand>();
+        std::cout << "Reached try_from_json!\n";
+        auto parsed_json = nlohmann::json::parse(raw);
+        SerializedCommand parsed = {
+            .command = parsed_json["cmd"],
+            .command_arguments = parsed_json["args"]
+        };
+        std::cout << parsed.command << ", " << parsed.command_arguments[0] << "\n";
 
         // check if the command is valid or not
         if (!known_commands.contains(parsed.command))
@@ -24,12 +23,13 @@ tl::expected<Command, str> try_from_json(const std::string& raw) noexcept
 
         return Command(std::move(parsed));
     } catch (nlohmann::json::exception& ex) {
+        std::cout << ex.what() << "\n";
         return tl::unexpected<str>("Couldn't parse command from json!");
     }
 }
 
 Command::Command(SerializedCommand&& sc)
-    : arguments(std::move(sc.command_arguments))
+    : arguments(std::move(sc.command_arguments)) 
 {
     // no checking necessary -- that has been done in `try_from_json`
     this->type = known_commands[sc.command];
