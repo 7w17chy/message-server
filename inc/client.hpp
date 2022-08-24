@@ -9,7 +9,7 @@ namespace client {
 struct Client 
 {
     std::string nick;
-    std::unique_ptr<sf::Socket> connection;
+    std::unique_ptr<sf::TcpSocket> connection;
 };
 
 } // client

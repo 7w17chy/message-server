@@ -47,7 +47,7 @@ private:
 
     using ClientMap = std::map<std::string, std::shared_ptr<client::Client>>;
     using RoomMap = std::map<std::string, std::shared_ptr<room::Room>>;
-    using Corridor = std::map<std::string, std::shared_ptr<msd::channel<client::Client>>>;
+    using Corridor = std::map<std::string, std::shared_ptr<msd::channel<std::shared_ptr<client::Client>>>>;
     using Mutex = std::mutex;
 
     std::pair<Mutex, ClientMap> connected_clients;
