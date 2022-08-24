@@ -47,7 +47,7 @@ std::optional<str> Room::main_loop() noexcept
             for (auto& [_, client] : this->participating_clients) {
                 // FIXME: copied from `server.cpp` -> extract into util function
                 if (this->client_connections.isReady(*client->connection)) {
-                    auto cmd = util::receive_from_socket<1128>(*client->connection);
+                    auto cmd = receive_from_socket(*client->connection);
                     switch (cmd->type) {
                     case command::CommandType::SEND:
                         this->broadcast(*client, cmd->arguments[0]);

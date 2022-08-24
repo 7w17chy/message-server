@@ -24,7 +24,7 @@ tl::expected<i32, str> Server::dispatch_clients() noexcept
         if (auto res = incoming_connections.accept(*new_connection);
             res == sf::Socket::Done) 
         {
-            auto cmd = util::receive_from_socket<1128>(*new_connection);
+            auto cmd = receive_from_socket(*new_connection);
 
             // client identified with their nickname
             // TODO: basic password checking

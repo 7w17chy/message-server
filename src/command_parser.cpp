@@ -1,5 +1,4 @@
 #include "../inc/command_parser.hpp"
-#include "../inc/connection_util.hpp"
 #include "../inc/json.hpp"
 #include <iostream>
 
