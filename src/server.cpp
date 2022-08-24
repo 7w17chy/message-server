@@ -33,6 +33,7 @@ tl::expected<i32, str> Server::dispatch_clients() noexcept
                     .nick = std::move(cmd->arguments[0]),
                     .connection = std::move(new_connection), 
                 });
+                client->connection->setBlocking(false);
                 this->server_state.add_client(client);
 
                 // send to welcome room

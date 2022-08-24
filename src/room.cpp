@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <optional>
+#include <SFML/System/Time.hpp>
 
 using namespace room;
 
@@ -20,13 +21,16 @@ void Room::on_client_join(std::shared_ptr<client::Client> new_client) noexcept
 
 void Room::broadcast(const client::Client& author, const std::string& message) noexcept
 {
+    std::cout << "===\nBroadcasting to all connected clients: " << message << "\n";
     for (auto& [_, client] : this->participating_clients) {
         // don't send the message to its author
         if (client->nick == author.nick)
             continue;
 
+        std::cout << "sending to client `" << client->nick << "`...\n";
         client->connection->send(message.data(), message.size());
     }
+    std::cout << "Done!\n===\n";
 }
 
 void Room::remove_client(const client::Client& to_remove) noexcept
@@ -39,17 +43,21 @@ void Room::remove_client(const client::Client& to_remove) noexcept
 // 2. check for upcoming messages and broadcast them if necessary
 std::optional<str> Room::main_loop() noexcept
 {
+    std::cout << "Initiating main loop for a room!\n";
     for (;;) {
-        for (auto new_user : *this->new_users)
-            this->on_client_join(new_user);
+        if (!(this->new_users->empty()))
+            for (auto new_user : *this->new_users)
+                this->on_client_join(new_user);
+        std::cout << "Finished waiting for new client joins, continue checking for messages\n";
 
-        if (client_connections.wait()) {
+        if (client_connections.wait(sf::milliseconds(100))) {
             for (auto& [_, client] : this->participating_clients) {
                 // FIXME: copied from `server.cpp` -> extract into util function
                 if (this->client_connections.isReady(*client->connection)) {
                     auto cmd = receive_from_socket(*client->connection);
                     switch (cmd->type) {
                     case command::CommandType::SEND:
+                        std::cout << "Client `" << client->nick << "` sent a message!\n";
                         this->broadcast(*client, cmd->arguments[0]);
                         break;
                     case command::CommandType::QUIT:
@@ -66,6 +74,7 @@ std::optional<str> Room::main_loop() noexcept
             }
         }
     }
+    std::cout << "Exiting main loop of a room!\n";
 
     return std::nullopt;
 }

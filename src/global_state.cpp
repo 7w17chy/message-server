@@ -1,6 +1,9 @@
 #include "../inc/global_state.hpp"
 #include "../inc/tl/expected.hpp"
 
+#include <thread>
+#include <iostream>
+
 using namespace state;
 using GSS =  GlobalServerState;
 
@@ -15,6 +18,15 @@ void GlobalServerState::create_room(const std::string& name)
     auto [lock2, corridor] =
         GlobalServerState::MutexLock<Corridor>::lock_blocking(this->corridor);
     corridor[name] = rooms[name]->get_channel();
+
+    std::thread main_loop_runner([=]() { 
+        std::cout << "Initiating room's main\n";
+        room->main_loop();
+    });
+
+    auto [lock3, running] =
+        GlobalServerState::MutexLock<RunningRooms>::lock_blocking(this->running_rooms);
+    running.push_back(std::move(main_loop_runner));
 }
 
 void GlobalServerState::add_room(std::shared_ptr<room::Room> new_room, const std::string& name)
@@ -26,6 +38,15 @@ void GlobalServerState::add_room(std::shared_ptr<room::Room> new_room, const std
     auto [lock2, corridor] =
         GlobalServerState::MutexLock<Corridor>::lock_blocking(this->corridor);
     corridor[name] = rooms[name]->get_channel();
+
+    std::thread main_loop_runner([=]() { 
+        std::cout << "Initiating room's main\n";
+        new_room->main_loop();
+    });
+
+    auto [lock3, running] =
+        GlobalServerState::MutexLock<RunningRooms>::lock_blocking(this->running_rooms);
+    running.push_back(std::move(main_loop_runner));
 }
 
 void GlobalServerState::destroy_room(const std::string& name)
@@ -56,4 +77,9 @@ std::optional<std::shared_ptr<room::Room>> GlobalServerState::search_room(const 
     if (rooms.contains(name))
         return rooms[name];
     return std::nullopt;
+}
+
+GlobalServerState::~GlobalServerState()
+{
+    // TODO: join on all thread handles
 }
