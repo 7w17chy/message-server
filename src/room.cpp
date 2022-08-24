@@ -67,7 +67,7 @@ std::optional<str> Room::main_loop() noexcept
                         // TODO
                         break;
                     case command::CommandType::IDENTIFY:
-                        // error handling
+                        // TODO: error handling, not allowed here
                         break;
                     }
                 }
